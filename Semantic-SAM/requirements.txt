@@ -1,0 +1,89 @@
+# =============================================================================
+# Semantic-SAM runtime requirements
+# Tested on: NVIDIA RTX PRO 6000 Blackwell (sm_120), CUDA 12.8, Python 3.10
+#
+# IMPORTANT - install order:
+#
+#   1) Create env (Python >= 3.10 is required for the Blackwell-ready torch wheels):
+#        conda create -n semsam python=3.10 -y
+#        conda activate semsam
+#
+#   2) (only if you need to compile CUDA ops on Blackwell) install CUDA 12.8 toolkit:
+#        conda install -c nvidia/label/cuda-12.8.1 cuda-nvcc cuda-cudart-dev cuda-libraries-dev -y
+#
+#   3) Install PyTorch 2.7.1 + cu128 (Blackwell sm_120 supported):
+#        pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
+#
+#   4) Install MaureenZOU's detectron2 fork (needed by Semantic-SAM):
+#        export CUDA_HOME=$CONDA_PREFIX
+#        export TORCH_CUDA_ARCH_LIST="8.0;8.6;8.9;9.0;12.0"
+#        export FORCE_CUDA=1
+#        pip install ninja
+#        pip install --no-build-isolation 'git+https://github.com/MaureenZOU/detectron2-xyz.git'
+#
+#   5) Install panopticapi:
+#        pip install 'git+https://github.com/cocodataset/panopticapi.git'
+#
+#   6) Install the rest of the python deps:
+#        pip install -r requirements.txt
+#
+#   7) Build the MultiScaleDeformableAttention CUDA op:
+#        cd semantic_sam/body/encoder/ops && python setup.py build install && cd -
+#
+# Notes:
+#   * For non-Blackwell GPUs you can safely use torch 2.1+ with cu118/cu121 wheels;
+#     the rest of this file is unchanged.
+#   * Pillow is pinned <10 because detectron2-xyz still uses the removed
+#     `PIL.Image.LINEAR` constant. scikit-image is therefore pinned <0.22.
+#   * numpy is pinned <2 because pycocotools / older numpy callers still use
+#     deprecated np.float / np.int aliases.
+# =============================================================================
+
+# ---- core numerical / vision ----
+numpy<2
+opencv-python
+pillow<10
+scipy
+scikit-image<0.22
+matplotlib
+einops
+shapely
+pycocotools
+
+# ---- model / DL utilities ----
+timm==0.4.12
+kornia==0.6.12
+torchmetrics
+fvcore
+transformers==4.46.3
+tokenizers
+safetensors
+huggingface-hub
+sentencepiece
+ftfy
+regex
+
+# ---- config / IO ----
+pyyaml
+yacs
+json_tricks
+omegaconf
+hydra-core
+iopath
+portalocker
+tabulate
+cloudpickle
+progressbar2
+vision-datasets==0.2.2
+
+# ---- web UI (fastapi_webui.py) ----
+fastapi
+uvicorn[standard]
+python-multipart
+
+# ---- NOTE: install separately, see header above ----
+# torch==2.7.1                      (pip install ... --index-url https://download.pytorch.org/whl/cu128)
+# torchvision==0.22.1               (pip install ... --index-url https://download.pytorch.org/whl/cu128)
+# detectron2 @ git+https://github.com/MaureenZOU/detectron2-xyz.git
+# panopticapi @ git+https://github.com/cocodataset/panopticapi.git
+# MultiScaleDeformableAttention     (built from semantic_sam/body/encoder/ops)

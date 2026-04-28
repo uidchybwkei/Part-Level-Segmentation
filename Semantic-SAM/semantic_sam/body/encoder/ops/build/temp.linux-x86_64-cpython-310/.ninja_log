@@ -1,0 +1,4 @@
+# ninja log v7
+0	25779	1777344339878637587	/root/autodl-tmp/Semantic-SAM/semantic_sam/body/encoder/ops/build/temp.linux-x86_64-cpython-310/root/autodl-tmp/Semantic-SAM/semantic_sam/body/encoder/ops/src/cpu/ms_deform_attn_cpu.o	be3f8878ec46987c
+2	82421	1777344339878637587	/root/autodl-tmp/Semantic-SAM/semantic_sam/body/encoder/ops/build/temp.linux-x86_64-cpython-310/root/autodl-tmp/Semantic-SAM/semantic_sam/body/encoder/ops/src/vision.o	777ec55df67e1454
+1	229624	1777344339878637587	/root/autodl-tmp/Semantic-SAM/semantic_sam/body/encoder/ops/build/temp.linux-x86_64-cpython-310/root/autodl-tmp/Semantic-SAM/semantic_sam/body/encoder/ops/src/cuda/ms_deform_attn_cuda.o	6e31158abcca5015

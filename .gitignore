@@ -1,0 +1,8 @@
+# Ignore model weight files
+*.pth
+
+# Conda environment
+Semantic-SAM/.conda/
+
+# AutoDL internal files
+.autodl/
