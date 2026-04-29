@@ -1,25 +1,26 @@
 # =============================================================================
 # Semantic-SAM runtime requirements
-# Tested on: NVIDIA RTX PRO 6000 Blackwell (sm_120), CUDA 12.8, Python 3.10
+# Tested on: NVIDIA A800-SXM4-80GB (sm_80), Python 3.11.9,
+# PyTorch 2.8.0+cu129, CUDA 12.9, cuDNN 9.10.2
 #
 # IMPORTANT - install order:
 #
-#   1) Create env (Python >= 3.10 is required for the Blackwell-ready torch wheels):
-#        conda create -n semsam python=3.10 -y
-#        conda activate semsam
+#   1) Create env:
+#        conda create -n semsam-py311-cu129 python=3.11.9 -y
+#        conda activate semsam-py311-cu129
 #
-#   2) (only if you need to compile CUDA ops on Blackwell) install CUDA 12.8 toolkit:
-#        conda install -c nvidia/label/cuda-12.8.1 cuda-nvcc cuda-cudart-dev cuda-libraries-dev -y
+#   2) Install CUDA 12.9 toolkit for compiling CUDA extensions:
+#        conda install -c nvidia/label/cuda-12.9.1 cuda-nvcc cuda-cudart-dev cuda-libraries-dev -y
 #
-#   3) Install PyTorch 2.7.1 + cu128 (Blackwell sm_120 supported):
-#        pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
+#   3) Install PyTorch 2.8.0 + cu129:
+#        pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu129
 #
-#   4) Install MaureenZOU's detectron2 fork (needed by Semantic-SAM):
+#   4) Install MaureenZOU's detectron2 fork:
 #        export CUDA_HOME=$CONDA_PREFIX
-#        export TORCH_CUDA_ARCH_LIST="8.0;8.6;8.9;9.0;12.0"
+#        export TORCH_CUDA_ARCH_LIST="8.0"
 #        export FORCE_CUDA=1
 #        pip install ninja
-#        pip install --no-build-isolation 'git+https://github.com/MaureenZOU/detectron2-xyz.git'
+#        pip install --no-build-isolation -e ../detectron2-xyz
 #
 #   5) Install panopticapi:
 #        pip install 'git+https://github.com/cocodataset/panopticapi.git'
@@ -30,9 +31,10 @@
 #   7) Build the MultiScaleDeformableAttention CUDA op:
 #        cd semantic_sam/body/encoder/ops && python setup.py build install && cd -
 #
+#   8) Run WebUI:
+#        python fastapi_webui.py --ckpt swinl_only_sam_many2many.pth --model_type L --port 7860
+#
 # Notes:
-#   * For non-Blackwell GPUs you can safely use torch 2.1+ with cu118/cu121 wheels;
-#     the rest of this file is unchanged.
 #   * Pillow is pinned <10 because detectron2-xyz still uses the removed
 #     `PIL.Image.LINEAR` constant. scikit-image is therefore pinned <0.22.
 #   * numpy is pinned <2 because pycocotools / older numpy callers still use
@@ -69,12 +71,13 @@ yacs
 json_tricks
 omegaconf
 hydra-core
-iopath
+iopath<0.1.10
 portalocker
 tabulate
 cloudpickle
 progressbar2
 vision-datasets==0.2.2
+ninja
 
 # ---- web UI (fastapi_webui.py) ----
 fastapi
@@ -82,8 +85,8 @@ uvicorn[standard]
 python-multipart
 
 # ---- NOTE: install separately, see header above ----
-# torch==2.7.1                      (pip install ... --index-url https://download.pytorch.org/whl/cu128)
-# torchvision==0.22.1               (pip install ... --index-url https://download.pytorch.org/whl/cu128)
-# detectron2 @ git+https://github.com/MaureenZOU/detectron2-xyz.git
+# torch==2.8.0                      (pip install ... --index-url https://download.pytorch.org/whl/cu129)
+# torchvision==0.23.0               (pip install ... --index-url https://download.pytorch.org/whl/cu129)
+# detectron2 @ ../detectron2-xyz     (local editable install)
 # panopticapi @ git+https://github.com/cocodataset/panopticapi.git
 # MultiScaleDeformableAttention     (built from semantic_sam/body/encoder/ops)
